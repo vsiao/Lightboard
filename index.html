@@ -18,9 +18,11 @@
   <script type="text/javascript">
   var lb_firebase = new Firebase(
       "https://lightboard.firebaseIO.com");
-  lb_firebase.child("hackmit")
-      .set({mode: "write", color: "#000"});
-  new Lightboard();
+  var room = lb_firebase.child("hackmit");
+  var lightboard = new Lightboard();
+  room.child("mode").on("value", function(data) {
+    lightboard.mode = data.val();
+  });
   </script>
 </body>
 </html>

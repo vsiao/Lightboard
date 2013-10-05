@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lightboard</title>
+  <meta name="viewport" content="width=device-width">
+  <style type="text/css">
+  body {
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    margin: 0;
+  }
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 20px;
+  }
+  a {
+    text-decoration: none;
+  }
+  .mode-button {
+    background: #ddd;
+    border-radius: 5px;
+    color: #333;
+    display: block;
+    font-size: 48px;
+    font-weight: 100;
+    margin-bottom: 20px;
+    padding: 20px;
+    text-align: center;
+  }
+  .active {
+    background: #ffa200;
+    color: #fff;
+  }
+  </style>
+</head>
+<body>
+  <ul>
+    <li><a href="#" class="mode-button" id="draw_btn">Draw</a></li>
+    <li><a href="#" class="mode-button" id="erase_btn">Erase</a></li>
+  </ul>
+  <script type="text/javascript" src="https://cdn.firebase.com/v0/firebase.js"></script>
+  <script type="text/javascript">
+  var draw_btn = document.getElementById("draw_btn");
+  var erase_btn = document.getElementById("erase_btn");
+  var lb_firebase = new Firebase(
+      "https://lightboard.firebaseIO.com");
+  var room = lb_firebase.child("hackmit");
+  room.child("mode").on("value", function(data) {
+    draw_btn.className = "mode-button ";
+    erase_btn.className = "mode-button ";
+    switch (data.val()) {
+      case "draw":
+        draw_btn.className += "active";
+        break;
+      case "erase":
+        erase_btn.className += "active";
+        break;
+      default:
+        break;
+    }
+  });
+  draw_btn.onclick = function() {
+    if (draw_btn.className.indexOf("active") >= 0) {
+      room.child("mode").set("idle");
+    } else {
+      room.child("mode").set("draw");
+    }
+  };
+  erase_btn.onclick = function() {
+    if (erase_btn.className.indexOf("active") >= 0) {
+      room.child("mode").set("idle");
+    } else {
+      room.child("mode").set("erase");
+    }
+  };
+  </script>
+</body>
+</html>
