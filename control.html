@@ -26,6 +26,9 @@
     margin-top: 20px;
     padding: 20px;
     text-align: center;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
   }
   #sizes, #colors {
     margin-top: 20px;
@@ -46,8 +49,16 @@
     background-repeat: no-repeat;
     background-position: center;
     display: block;
+  }
+  .size-button {
     height: 50px;
     width: 50px;
+  }
+  .color {
+    border-radius: 3px;
+    width: 30px;
+    height: 30px;
+    margin: 10px 10px;
   }
   .active {
     background: #ffa200 !important;
@@ -64,15 +75,15 @@
     <li><a href="#" class="size-button" style="background-image:url(15.png)" data-val="10"></a></li>
   </ul>
   <ul id="colors">
-    <li><a href="#" class="color-button" data-val=""></a></li>
-    <li><a href="#" class="color-button" data-val=""></a></li>
-    <li><a href="#" class="color-button" data-val=""></a></li>
-    <li><a href="#" class="color-button" data-val=""></a></li>
-    <li><a href="#" class="color-button" data-val=""></a></li>
+    <li><a href="#" class="color-button" data-val=""><div class="color" style="background:#000"></div></a></li>
+    <li><a href="#" class="color-button" data-val=""><div class="color" style="background:red"></div></a></li>
+    <li><a href="#" class="color-button" data-val=""><div class="color" style="background:green"></div></a></li>
+    <li><a href="#" class="color-button" data-val=""><div class="color" style="background:blue"></div></a></li>
+    <li><a href="#" class="color-button" data-val=""><div class="color" style="background:purple"></div></a></li>
   </ul>
   <ul>
-    <li><a href="#" class="mode-button" id="draw_btn">Draw</a></li>
-    <li><a href="#" class="mode-button" id="erase_btn">Erase</a></li>
+    <li href="#" class="mode-button" id="draw_btn">Draw</li>
+    <li href="#" class="mode-button" id="erase_btn">Erase</li>
   </ul>
   <script type="text/javascript" src="https://cdn.firebase.com/v0/firebase.js"></script>
   <script type="text/javascript">
@@ -95,19 +106,31 @@
         break;
     }
   });
-  draw_btn.onclick = function() {
-    if (draw_btn.className.indexOf("active") >= 0) {
-      room.child("mode").set("idle");
-    } else {
-      room.child("mode").set("draw");
-    }
+  // draw_btn.onclick = function() {
+  //   if (draw_btn.className.indexOf("active") >= 0) {
+  //     room.child("mode").set("idle");
+  //   } else {
+  //     room.child("mode").set("draw");
+  //   }
+  // };
+  draw_btn.ontouchstart = function() {
+    room.child("mode").set("draw");
   };
-  erase_btn.onclick = function() {
-    if (erase_btn.className.indexOf("active") >= 0) {
-      room.child("mode").set("idle");
-    } else {
-      room.child("mode").set("erase");
-    }
+  draw_btn.ontouchend = function() {
+    room.child("mode").set("idle");
+  };
+  // erase_btn.onclick = function() {
+  //   if (erase_btn.className.indexOf("active") >= 0) {
+  //     room.child("mode").set("idle");
+  //   } else {
+  //     room.child("mode").set("erase");
+  //   }
+  // };
+  erase_btn.ontouchstart = function() {
+    room.child("mode").set("erase");
+  };
+  erase_btn.ontouchend = function() {
+    room.child("mode").set("idle");
   };
   var i;
   var size_buttons = document.getElementsByClassName("size-button");
@@ -126,6 +149,25 @@
       var ii = i;
       size_buttons[i].onclick = function() {
         room.child("size").set(sizes[ii]);
+      };
+    })();
+  }
+  var color_buttons = document.getElementsByClassName("color-button");
+  var colors = ["#000", "red", "green", "blue", "purple"];
+  room.child("color").on("value", function(data) {
+    for (i = 0; i < colors.length; ++i) {
+      if (colors[i] === data.val()) {
+        color_buttons[i].parentNode.className = "active";
+      } else {
+        color_buttons[i].parentNode.className = "";
+      }
+    }
+  });
+  for (i = 0; i < color_buttons.length; ++i) {
+    (function() {
+      var ii = i;
+      color_buttons[i].onclick = function() {
+        room.child("color").set(colors[ii]);
       };
     })();
   }

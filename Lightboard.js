@@ -17,26 +17,38 @@ var Lightboard = function() {
     context.drawImage(video, 0, 0, width, height);
     var point = me.findCursor(
         context.getImageData(0, 0, width, height).data);
+    cursor_context.clearRect(0, 0, width, height);
     if (point) {
-      cursor_context.clearRect(0, 0, width, height);
       cursor_context.beginPath();
       cursor_context.arc(point.x, point.y, me.size, 0, 2*Math.PI);
       cursor_context.closePath();
-      cursor_context.fillStyle = "red";
+      cursor_context.fillStyle = "#aaa";
       cursor_context.fill();
-    }
-    lightboard_context.lineWidth = 2*me.size;
-    if (me.mode === "draw" && point) {
-      if (me.last_point) {
-        lightboard_context.lineTo(point.x, point.y);
-        lightboard_context.stroke();
+
+      lightboard_context.lineWidth = 2*me.size;
+      if (me.mode === "draw") {
+        lightboard_context.strokeStyle = me.color;
+        if (me.last_point) {
+          lightboard_context.lineTo(point.x, point.y);
+          lightboard_context.stroke();
+        } else {
+          lightboard_context.beginPath();
+          lightboard_context.moveTo(point.x, point.y);
+        }
+        me.last_point = point;
+      } else if (me.mode === "erase") {
+        lightboard_context.strokeStyle = "#fff";
+        if (me.last_point) {
+          lightboard_context.lineTo(point.x, point.y);
+          lightboard_context.stroke();
+        } else {
+          lightboard_context.beginPath();
+          lightboard_context.moveTo(point.x, point.y);
+        }
+        me.last_point = point;
       } else {
-        lightboard_context.beginPath();
-        lightboard_context.moveTo(point.x, point.y);
+        me.last_point = null;
       }
-      me.last_point = point;
-    } else {
-      me.last_point = null;
     }
     setTimeout(videoLoop, 30);
   };

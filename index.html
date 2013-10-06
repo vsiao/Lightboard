@@ -57,7 +57,7 @@
       "https://lightboard.firebaseIO.com");
   var room = lb_firebase.child("hackmit");
   var lightboard = new Lightboard();
-  room.set({mode: "idle", color: "#000", size: 2});
+  // room.set({mode: "idle", color: "#000", size: 2});
   room.on("value", function(data) {
     var settings = data.val();
     lightboard.mode = settings.mode;
