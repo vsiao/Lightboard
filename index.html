@@ -3,15 +3,52 @@
 <head>
   <title>Lightboard</title>
   <style type="text/css">
-  #lightboard {
+  body {
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  }
+  #container {
+    bottom: 0;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+    display: -webkit-box;
     left: 0;
     position: absolute;
+    right: 0;
+    top: 0;
+  }
+  #canvases {
+    position: relative;
+  }
+  h1 {
+    color: #ccc;
+    font-size: 18px;
+    font-weight: 100;
+    left: 10px;
+    letter-spacing: 0.1em;
+    position: absolute;
+    top: -36px;
+  }
+  #video_canvas {
+    visibility: hidden;
+  }
+  #lightboard, #cursor {
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    left: 0;
+    position: absolute;
+    top: 0;
   }
   </style>
 </head>
 <body>
-  <video id="video"></video>
-  <canvas id="lightboard" width="640px" height="480px"></canvas>
+  <div id="container">
+    <div id="canvases">
+      <h1>Lightboard</h1>
+      <canvas id="video_canvas" width="640px" height="480px"></canvas>
+      <canvas id="lightboard" width="640px" height="480px"></canvas>
+      <canvas id="cursor" width="640px" height="480px"></canvas>
+    </div>
+  </div>
   <script type="text/javascript" src="adapter.js"></script>
   <script type="text/javascript" src="https://cdn.firebase.com/v0/firebase.js"></script>
   <script type="text/javascript" src="Lightboard.js"></script>
@@ -20,8 +57,12 @@
       "https://lightboard.firebaseIO.com");
   var room = lb_firebase.child("hackmit");
   var lightboard = new Lightboard();
-  room.child("mode").on("value", function(data) {
-    lightboard.mode = data.val();
+  room.set({mode: "idle", color: "#000", size: 2});
+  room.on("value", function(data) {
+    var settings = data.val();
+    lightboard.mode = settings.mode;
+    lightboard.color = settings.color;
+    lightboard.size = settings.size;
   });
   </script>
 </body>

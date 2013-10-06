@@ -11,7 +11,7 @@
   ul {
     list-style-type: none;
     margin: 0;
-    padding: 20px;
+    padding: 0 20px;
   }
   a {
     text-decoration: none;
@@ -23,17 +23,53 @@
     display: block;
     font-size: 48px;
     font-weight: 100;
-    margin-bottom: 20px;
+    margin-top: 20px;
     padding: 20px;
     text-align: center;
   }
+  #sizes, #colors {
+    margin-top: 20px;
+    padding: 0;
+    text-align: center;
+  }
+  #sizes li, #colors li {
+    background: #ddd;
+    border-radius: 5px;
+    display: inline-block;
+    margin-right: 4px;
+    vertical-align: top;
+  }
+  #sizes li:last-child, #colors li:last-child {
+    margin-right: 0;
+  }
+  .size-button, .color-button {
+    background-repeat: no-repeat;
+    background-position: center;
+    display: block;
+    height: 50px;
+    width: 50px;
+  }
   .active {
-    background: #ffa200;
+    background: #ffa200 !important;
     color: #fff;
   }
   </style>
 </head>
 <body>
+  <ul id="sizes">
+    <li><a href="#" class="size-button" style="background-image:url(2.png)" data-val="1"></a></li>
+    <li><a href="#" class="size-button" style="background-image:url(4.png)" data-val="2"></a></li>
+    <li><a href="#" class="size-button" style="background-image:url(7.png)" data-val="4"></a></li>
+    <li><a href="#" class="size-button" style="background-image:url(11.png)" data-val="6"></a></li>
+    <li><a href="#" class="size-button" style="background-image:url(15.png)" data-val="10"></a></li>
+  </ul>
+  <ul id="colors">
+    <li><a href="#" class="color-button" data-val=""></a></li>
+    <li><a href="#" class="color-button" data-val=""></a></li>
+    <li><a href="#" class="color-button" data-val=""></a></li>
+    <li><a href="#" class="color-button" data-val=""></a></li>
+    <li><a href="#" class="color-button" data-val=""></a></li>
+  </ul>
   <ul>
     <li><a href="#" class="mode-button" id="draw_btn">Draw</a></li>
     <li><a href="#" class="mode-button" id="erase_btn">Erase</a></li>
@@ -73,6 +109,26 @@
       room.child("mode").set("erase");
     }
   };
+  var i;
+  var size_buttons = document.getElementsByClassName("size-button");
+  var sizes = [2,4,7,11,15];
+  room.child("size").on("value", function(data) {
+    for (i = 0; i < sizes.length; ++i) {
+      if (sizes[i] === data.val()) {
+        size_buttons[i].parentNode.className = "active";
+      } else {
+        size_buttons[i].parentNode.className = "";
+      }
+    }
+  });
+  for (i = 0; i < size_buttons.length; ++i) {
+    (function() {
+      var ii = i;
+      size_buttons[i].onclick = function() {
+        room.child("size").set(sizes[ii]);
+      };
+    })();
+  }
   </script>
 </body>
 </html>

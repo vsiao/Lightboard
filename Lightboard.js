@@ -1,26 +1,42 @@
 var Lightboard = function() {
   var width = Lightboard.VIDEO_WIDTH;
   var height = Lightboard.VIDEO_HEIGHT;
-  var video = document.getElementById("video");
-      //document.createElement("video");
-  var canvas = document.createElement("canvas");
+  var video = document.createElement("video");
+  var canvas = document.getElementById("video_canvas");
   canvas.width = width;
   canvas.height = height;
   var context = canvas.getContext("2d");
+  context.translate(width, 0);
+  context.scale(-1, 1);
   var lightboard = document.getElementById("lightboard");
   var lightboard_context = lightboard.getContext("2d");
-  //  lightboard_context.beginPath();
-  //  lightboard_context.arc(320, 240, 5, 0, 2*Math.PI);
-  //  lightboard_context.fill();
+  var cursor = document.getElementById("cursor");
+  var cursor_context = cursor.getContext("2d");
   var me = this;
   var videoLoop = function() {
     context.drawImage(video, 0, 0, width, height);
     var point = me.findCursor(
         context.getImageData(0, 0, width, height).data);
+    if (point) {
+      cursor_context.clearRect(0, 0, width, height);
+      cursor_context.beginPath();
+      cursor_context.arc(point.x, point.y, me.size, 0, 2*Math.PI);
+      cursor_context.closePath();
+      cursor_context.fillStyle = "red";
+      cursor_context.fill();
+    }
+    lightboard_context.lineWidth = 2*me.size;
     if (me.mode === "draw" && point) {
-      lightboard_context.beginPath();
-      lightboard_context.arc(point.x, point.y, 5, 0, 2*Math.PI);
-      lightboard_context.fill();
+      if (me.last_point) {
+        lightboard_context.lineTo(point.x, point.y);
+        lightboard_context.stroke();
+      } else {
+        lightboard_context.beginPath();
+        lightboard_context.moveTo(point.x, point.y);
+      }
+      me.last_point = point;
+    } else {
+      me.last_point = null;
     }
     setTimeout(videoLoop, 30);
   };
@@ -111,7 +127,9 @@ Lightboard.prototype.findCursor = function(img_data) {
     }
   }
   console.log(max_size);
-  if (point) console.log(point);
+  if (point) {
+    console.log(point);
+  }
   return point;
 };
 
